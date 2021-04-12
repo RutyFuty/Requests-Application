@@ -2,7 +2,7 @@ import 'package:booking_request_app/body/request/firebase_database_util.dart';
 import 'package:booking_request_app/body/request/request.dart';
 import 'package:flutter/material.dart';
 
-import 'addBody.dart';
+import 'addAndEditRequest.dart';
 
 class RequestReview extends StatefulWidget {
   final Request _request;
@@ -285,7 +285,15 @@ class _RequestReviewState extends State<RequestReview>
                       Expanded(
                         child: InkWell(
                           borderRadius: BorderRadius.circular(5.0),
-                          onTap: () => showEditWidget(widget._request, true),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => new AddEditRequest(
+                                    context, this, true, widget._request),
+                              ),
+                            );
+                          },
                           child: Row(
                             children: <Widget>[
                               IconButton(
@@ -294,7 +302,6 @@ class _RequestReviewState extends State<RequestReview>
                                   size: 30.0,
                                   color: const Color(0xFF167F67),
                                 ),
-
                               ),
                               Text(
                                 'Редактировать',
@@ -353,14 +360,6 @@ class _RequestReviewState extends State<RequestReview>
     setState(() {
       widget._databaseUtil.updateRequest(request);
     });
-  }
-
-  showEditWidget(Request request, bool isEdit) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => new AddRequestDialog()
-          .buildAboutDialog(context, this, isEdit, request),
-    );
   }
 
   void deleteRequest(Request request) {

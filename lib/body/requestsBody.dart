@@ -4,7 +4,7 @@ import 'package:booking_request_app/body/requestReview.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'addBody.dart';
+import 'addAndEditRequest.dart';
 
 class RequestsBody extends StatefulWidget {
   @override
@@ -17,22 +17,36 @@ class _RequestsBodyState extends State<RequestsBody>
 
   bool _anchorToBottom = false;
 
-  // instance of util class
   FirebaseDatabaseUtil databaseUtil;
   int _counter;
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
-          _counter = databaseUtil.getCounter();
-        }));
+    counterListener();
     return initBody();
+  }
+
+  Future counterListener() async {
+    _counter = databaseUtil.getCounter();
+    await new Future.delayed(const Duration(seconds: 3));
+    setState(() {
+    });
+  }
+
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
   }
 
   initBody() {
     return Scaffold(
-      body: _counter != 0
+      body: (_counter != 0)
           ? new FirebaseAnimatedList(
+              defaultChild: Container(
+                child: Center(child: Text('Загрузка...')),
+              ),
               key: new ValueKey<bool>(_anchorToBottom),
               query: databaseUtil.getRequest(),
               reverse: _anchorToBottom,
@@ -51,9 +65,17 @@ class _RequestsBodyState extends State<RequestsBody>
               child: Center(child: Text('Заявки отсутствуют')),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showEditWidget(null, false),
         child: const Icon(Icons.add),
         backgroundColor: Colors.lightGreen,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  new AddEditRequest(context, this, false, null),
+            ),
+          );
+        },
       ),
     );
   }
@@ -63,12 +85,6 @@ class _RequestsBodyState extends State<RequestsBody>
     super.initState();
     databaseUtil = new FirebaseDatabaseUtil();
     databaseUtil.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    databaseUtil.dispose();
   }
 
   @override
@@ -82,20 +98,6 @@ class _RequestsBodyState extends State<RequestsBody>
   void update(Request request) {
     setState(() {
       databaseUtil.updateRequest(request);
-    });
-  }
-
-  showEditWidget(Request request, bool isEdit) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => new AddRequestDialog()
-          .buildAboutDialog(context, this, isEdit, request),
-    );
-  }
-
-  void deleteRequest(Request request) {
-    setState(() {
-      databaseUtil.deleteRequest(request);
     });
   }
 

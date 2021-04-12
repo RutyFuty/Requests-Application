@@ -1,3 +1,4 @@
+import 'package:booking_request_app/body/request/firebase_database_util.dart';
 import 'package:booking_request_app/body/requestsBody.dart';
 import 'package:booking_request_app/body/settingsBody.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,10 +22,7 @@ class _HomePageState extends State<HomePage> {
   var _currentPage = 0;
 
   //Лист нижних вкладок
-  List<dynamic> _bodyList = [
-    RequestsBody(),
-    SettingsBody()
-  ];
+  List<dynamic> _bodyList = [RequestsBody(), SettingsBody()];
 
   void onItemTapped(int index) {
     setState(() {

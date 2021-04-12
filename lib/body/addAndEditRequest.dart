@@ -1,12 +1,25 @@
-import 'package:booking_request_app/body/request/request.dart';
-import 'package:flutter/material.dart';
 import 'dart:math';
 
-class AddRequestDialog {
+import 'package:booking_request_app/body/request/request.dart';
+import 'package:flutter/material.dart';
+
+class AddEditRequest extends StatefulWidget {
+  final bool _isEdit;
+  final AddRequestCallback _myAddPageState;
+  final Request _request;
+
+  AddEditRequest(
+      BuildContext context, this._myAddPageState, this._isEdit, this._request);
+
+  @override
+  _AddEditRequestState createState() => _AddEditRequestState();
+}
+
+class _AddEditRequestState extends State<AddEditRequest> {
   Request request;
 
   final teRequestType = TextEditingController();
-  List<String> requestTypes = [
+  final List<String> requestTypes = [
     'Плановое обслуживание',
     'Ремонт',
     'Обеспечение',
@@ -33,10 +46,10 @@ class AddRequestDialog {
     decoration: TextDecoration.underline,
   );
 
-  Widget buildAboutDialog(BuildContext context,
-      AddRequestCallback _myAddPageState, bool isEdit, Request request) {
-    if (request != null) {
-      this.request = request;
+  @override
+  Widget build(BuildContext context) {
+    if (widget._request != null) {
+      this.request = widget._request;
       teRequestType.text = request.requestType;
       teClient.text = request.client;
       tePhone.text = request.phone;
@@ -51,34 +64,40 @@ class AddRequestDialog {
       numRequestNumber = int.parse(request.requestNumber);
     }
 
-    return new AlertDialog(
-      title: new Text(isEdit ? 'Редактирование заявки' : 'Создать заявку'),
-      contentPadding: EdgeInsets.fromLTRB(10, 15, 10, 15),
-      content: new SingleChildScrollView(
-        child: new Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            DropDownWidget("Тип заявки", requestTypes, teRequestType),
-            getTextField("Контактное лицо, ФИО", teClient),
-            getTextField("Телефон", tePhone),
-            getTextField("Email", teEmail),
-            getTextField("Организация", teOrganisation),
-            getTextField("Контракт №", teContractNumber),
-            getTextField("Адресс проведения работ", teAddress),
-            getTextField("Наименование оборудования/модель", teEquipment),
-            getTextField("Описание неисправности", teComment),
-            getTextField("Статус", teStatus),
-            getTextField("Дата", teDate),
-            new GestureDetector(
-              onTap: () => onTap(isEdit, _myAddPageState, context),
-              child: new Container(
-                margin: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-                child: getAppBorderButton(isEdit ? "Готово" : "Добавить",
-                    EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0)),
+    return Scaffold(
+      appBar: AppBar(
+          title: new Text(
+              widget._isEdit ? 'Редактирование заявки' : 'Создать заявку')),
+      body: new Padding(
+        padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+        child: new SingleChildScrollView(
+          child: new Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              DropDownWidget("Тип заявки", requestTypes, teRequestType),
+              getTextField("Контактное лицо, ФИО", teClient),
+              getTextField("Телефон", tePhone),
+              getTextField("Email", teEmail),
+              getTextField("Организация", teOrganisation),
+              getTextField("Контракт №", teContractNumber),
+              getTextField("Адресс проведения работ", teAddress),
+              getTextField("Наименование оборудования/модель", teEquipment),
+              getTextField("Описание неисправности", teComment),
+              getTextField("Статус", teStatus),
+              getTextField("Дата", teDate),
+              new GestureDetector(
+                onTap: () =>
+                    onTap(widget._isEdit, widget._myAddPageState, context),
+                child: new Container(
+                  margin: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                  child: getAppBorderButton(
+                      widget._isEdit ? "Готово" : "Добавить",
+                      EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -143,6 +162,7 @@ class AddRequestDialog {
     if (isEdit) {
       _myHomePageState.update(getData(isEdit));
       Navigator.of(context).popUntil((route) => route.isFirst);
+      // Navigator.of(context).pop();
     } else {
       _myHomePageState.addRequest(getData(isEdit));
       Navigator.of(context).pop();
