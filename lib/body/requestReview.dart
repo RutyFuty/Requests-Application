@@ -1,5 +1,6 @@
 import 'package:booking_request_app/body/request/firebase_database_util.dart';
 import 'package:booking_request_app/body/request/request.dart';
+import 'package:booking_request_app/body/settingsBody.dart';
 import 'package:flutter/material.dart';
 
 import 'addAndEditRequest.dart';
@@ -297,6 +298,7 @@ class _RequestReviewState extends State<RequestReview>
                           child: Row(
                             children: <Widget>[
                               IconButton(
+                                onPressed: null,
                                 icon: const Icon(
                                   Icons.edit,
                                   size: 30.0,
@@ -322,6 +324,7 @@ class _RequestReviewState extends State<RequestReview>
                           child: Row(
                             children: <Widget>[
                               IconButton(
+                                onPressed: null,
                                 icon: const Icon(Icons.delete_forever,
                                     size: 30.0, color: const Color(0xFF167F67)),
                               ),

@@ -29,13 +29,12 @@ class _RequestsBodyState extends State<RequestsBody>
   Future counterListener() async {
     _counter = databaseUtil.getCounter();
     await new Future.delayed(const Duration(seconds: 3));
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
   void setState(fn) {
-    if(mounted) {
+    if (mounted) {
       super.setState(fn);
     }
   }

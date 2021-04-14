@@ -41,11 +41,6 @@ class _AddEditRequestState extends State<AddEditRequest> {
   //Генерируем номер заявки
   int numRequestNumber = new Random().nextInt(99999) + 1;
 
-  static const TextStyle linkStyle = const TextStyle(
-    color: Colors.blue,
-    decoration: TextDecoration.underline,
-  );
-
   @override
   Widget build(BuildContext context) {
     if (widget._request != null) {
