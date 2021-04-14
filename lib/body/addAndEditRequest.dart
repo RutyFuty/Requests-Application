@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:booking_request_app/body/request/request.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddEditRequest extends StatefulWidget {
   final bool _isEdit;
@@ -17,6 +18,8 @@ class AddEditRequest extends StatefulWidget {
 
 class _AddEditRequestState extends State<AddEditRequest> {
   Request request;
+  String _selectedMode;
+  bool _isValid;
 
   final teRequestType = TextEditingController();
   final List<String> requestTypes = [
@@ -26,6 +29,13 @@ class _AddEditRequestState extends State<AddEditRequest> {
     'Создание нового рабочего места',
     'Утилизация оборудования',
     'Другое',
+  ];
+  final List<String> requestStatuses = [
+    'открыта',
+    'в работе',
+    'отложена',
+    'завершена',
+    'отменена',
   ];
   final teClient = TextEditingController();
   final tePhone = TextEditingController();
@@ -40,6 +50,27 @@ class _AddEditRequestState extends State<AddEditRequest> {
 
   //Генерируем номер заявки
   int numRequestNumber = new Random().nextInt(99999) + 1;
+  String newRequestStatus = 'открыта';
+
+  _loadMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _selectedMode = (prefs.getString('selectedMode'));
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMode();
+  }
+
+  String _getDate() {
+    int day = DateTime.now().day;
+    int month = DateTime.now().month;
+    int year = DateTime.now().year;
+    return '$day' + '.$month' + '.$year';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,16 +102,25 @@ class _AddEditRequestState extends State<AddEditRequest> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               DropDownWidget("Тип заявки", requestTypes, teRequestType),
-              getTextField("Контактное лицо, ФИО", teClient),
-              getTextField("Телефон", tePhone),
-              getTextField("Email", teEmail),
-              getTextField("Организация", teOrganisation),
-              getTextField("Контракт №", teContractNumber),
-              getTextField("Адресс проведения работ", teAddress),
-              getTextField("Наименование оборудования/модель", teEquipment),
-              getTextField("Описание неисправности", teComment),
-              getTextField("Статус", teStatus),
-              getTextField("Дата", teDate),
+              getTextField(
+                  "Контактное лицо, ФИО", teClient, TextInputType.name),
+              getTextField("Телефон", tePhone, TextInputType.phone),
+              getTextField("Email", teEmail, TextInputType.emailAddress),
+              getTextField("Организация", teOrganisation, TextInputType.text),
+              getTextField(
+                  "Контракт №", teContractNumber, TextInputType.number),
+              getTextField("Адресс проведения работ", teAddress,
+                  TextInputType.streetAddress),
+              getTextField("Наименование оборудования/модель", teEquipment,
+                  TextInputType.text),
+              getTextField(
+                  "Описание неисправности", teComment, TextInputType.multiline),
+              (_selectedMode == 'Сервис')
+                  ? DropDownWidget("Статус", requestStatuses, teStatus)
+                  : Container(),
+              (_selectedMode == 'Сервис')
+                  ? getTextField("Дата", teDate, TextInputType.datetime)
+                  : Container(),
               new GestureDetector(
                 onTap: () =>
                     onTap(widget._isEdit, widget._myAddPageState, context),
@@ -98,18 +138,21 @@ class _AddEditRequestState extends State<AddEditRequest> {
     );
   }
 
-  Widget getTextField(
-      String inputBoxName, TextEditingController inputBoxController) {
+  Widget getTextField(String inputBoxName,
+      TextEditingController inputBoxController, TextInputType textInputType) {
     var field = new Padding(
       padding: const EdgeInsets.all(5.0),
       child: new TextFormField(
+        autovalidateMode: AutovalidateMode.always,
+        keyboardType: textInputType,
         controller: inputBoxController,
         decoration: new InputDecoration(
           hintText: inputBoxName,
         ),
+        validator: (value) =>
+            value.isEmpty ? 'Поле не может быть пустым' : null,
       ),
     );
-
     return field;
   }
 
@@ -137,7 +180,7 @@ class _AddEditRequestState extends State<AddEditRequest> {
 
   Request getData(bool isEdit) {
     return new Request(
-        isEdit ? request.id : "",
+        isEdit ? request.id : '',
         teRequestType.text,
         teClient.text,
         tePhone.text,
@@ -147,20 +190,59 @@ class _AddEditRequestState extends State<AddEditRequest> {
         teAddress.text,
         teEquipment.text,
         teComment.text,
-        teStatus.text,
-        teDate.text,
+        (_selectedMode == 'Сервис') ? teStatus.text : newRequestStatus,
+        (_selectedMode == 'Сервис') ? teDate.text : _getDate(),
         numRequestNumber.toString());
+  }
+
+  errorDialog() {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Не все поля заполнены'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   onTap(
       bool isEdit, AddRequestCallback _myHomePageState, BuildContext context) {
-    if (isEdit) {
-      _myHomePageState.update(getData(isEdit));
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      // Navigator.of(context).pop();
+    Request localRequest = getData(isEdit);
+    //Проверка заявки на пустые поля
+    if (localRequest.requestType == '' ||
+        localRequest.client == '' ||
+        localRequest.phone == '' ||
+        localRequest.email == '' ||
+        localRequest.organisation == '' ||
+        localRequest.contractNumber == '' ||
+        localRequest.address == '' ||
+        localRequest.equipment == '' ||
+        localRequest.comment == '' ||
+        localRequest.date == '') {
+      _isValid = false;
     } else {
-      _myHomePageState.addRequest(getData(isEdit));
-      Navigator.of(context).pop();
+      _isValid = true;
+    }
+
+    if (_isValid) {
+      if (isEdit) {
+        _myHomePageState.update(localRequest);
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      } else {
+        _myHomePageState.addRequest(localRequest);
+        Navigator.of(context).pop();
+      }
+    } else {
+      errorDialog();
     }
   }
 }
