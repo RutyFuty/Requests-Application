@@ -1,8 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 
-//Содержит информацию по заявке
 class Request {
-
   //Основные поля заявки
   String _id;
   String _requestType;
@@ -14,11 +12,11 @@ class Request {
   String _address;
   String _equipment;
   String _comment;
+
   //Вспомогательные поля заявки
   String _status;
   String _date;
   String _requestNumber;
-
 
   Request(
       this._id,

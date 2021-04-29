@@ -1,8 +1,10 @@
-import 'package:booking_request_app/body/request/firebase_database_util.dart';
-import 'package:booking_request_app/body/request/request.dart';
+import 'package:booking_request_app/screens/body/request/add_request_callback.dart';
+import 'package:booking_request_app/screens/body/request/firebase_database_util.dart';
+import 'package:booking_request_app/screens/body/request/request.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'addAndEditRequest.dart';
+import 'add_edit_request.dart';
 
 class RequestReview extends StatefulWidget {
   final Request _request;
@@ -17,19 +19,37 @@ class RequestReview extends StatefulWidget {
 
 class _RequestReviewState extends State<RequestReview>
     implements AddRequestCallback {
-  TextStyle fieldStyle = TextStyle(
-    fontSize: 15.0,
-    fontWeight: FontWeight.normal,
-    color: Color(0xFF808080),
-  );
-  TextStyle dataStyle = TextStyle(
-    fontSize: 15.0,
-    fontWeight: FontWeight.normal,
-    color: Colors.black,
-  );
+  int _addFontSize = 0;
+
+  String _selectedMode;
+
+  _loadSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _selectedMode = (prefs.getString('selectedMode'));
+      _addFontSize = (prefs.getInt('addFontSize'));
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
 
   @override
   Widget build(BuildContext context) {
+    TextStyle fieldStyle = TextStyle(
+      fontSize: 15.0 + _addFontSize,
+      fontWeight: FontWeight.normal,
+      color: Color(0xFF808080),
+    );
+    TextStyle dataStyle = TextStyle(
+      fontSize: 15.0 + _addFontSize,
+      fontWeight: FontWeight.normal,
+      color: Colors.black,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Заявка № ' + widget._request.requestNumber),
@@ -44,7 +64,7 @@ class _RequestReviewState extends State<RequestReview>
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 15.0),
                   child: Row(
                     children: <Widget>[
-                      new Text(
+                      Text(
                         widget._request.requestType,
                         style: TextStyle(
                             fontSize: 20.0,
@@ -56,10 +76,10 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Клиент',
                           style: fieldStyle,
                         ),
@@ -79,16 +99,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Контракт №',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.contractNumber,
                           style: TextStyle(
                             fontSize: 15.0,
@@ -102,16 +122,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Контактное лицо',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.client,
                           style: TextStyle(
                             fontSize: 15.0,
@@ -125,16 +145,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
-                          'Адресс проведения работ',
+                        child: Text(
+                          'Адрес проведения работ',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.address,
                           style: dataStyle,
                         ),
@@ -144,16 +164,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Контактный телефон',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.phone,
                           style: dataStyle,
                         ),
@@ -163,16 +183,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Эл. почта',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.email,
                           style: dataStyle,
                         ),
@@ -182,10 +202,10 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Статус',
                           style: fieldStyle,
                         ),
@@ -202,7 +222,7 @@ class _RequestReviewState extends State<RequestReview>
                             ),
                             child: Padding(
                               padding: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-                              child: new Text(
+                              child: Text(
                                 widget._request.status,
                                 style: TextStyle(
                                   fontSize: 15.0,
@@ -219,16 +239,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Дата формирования заявки',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.date,
                           style: TextStyle(
                             fontSize: 15.0,
@@ -242,16 +262,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Наименование оборудования, модель',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.equipment,
                           style: dataStyle,
                         ),
@@ -261,16 +281,16 @@ class _RequestReviewState extends State<RequestReview>
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Row(
+                  child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           'Описание неисправности, требуемые работы',
                           style: fieldStyle,
                         ),
                       ),
                       Expanded(
-                        child: new Text(
+                        child: Text(
                           widget._request.comment,
                           style: dataStyle,
                         ),
@@ -316,29 +336,32 @@ class _RequestReviewState extends State<RequestReview>
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(5.0),
-                          onTap: () => deleteRequest(widget._request),
-                          child: Row(
-                            children: <Widget>[
-                              IconButton(
-                                onPressed: null,
-                                icon: const Icon(Icons.delete_forever,
-                                    size: 30.0, color: const Color(0xFF167F67)),
-                              ),
-                              Text(
-                                'Удалить',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.black,
+                      (_selectedMode == 'Сервис')
+                          ? Expanded(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(5.0),
+                                onTap: () => deleteRequest(widget._request),
+                                child: Row(
+                                  children: <Widget>[
+                                    IconButton(
+                                      onPressed: null,
+                                      icon: const Icon(Icons.delete_forever,
+                                          size: 30.0,
+                                          color: const Color(0xFF167F67)),
+                                    ),
+                                    Text(
+                                      'Удалить',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
+                            )
+                          : Container(),
                     ],
                   ),
                 ),

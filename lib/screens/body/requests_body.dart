@@ -1,10 +1,13 @@
-import 'package:booking_request_app/body/request/firebase_database_util.dart';
-import 'package:booking_request_app/body/request/request.dart';
-import 'package:booking_request_app/body/requestReview.dart';
+import 'package:booking_request_app/screens/body/request/add_request_callback.dart';
+import 'package:booking_request_app/screens/body/request/firebase_database_util.dart';
+import 'package:booking_request_app/screens/body/request/request.dart';
+import 'package:booking_request_app/screens/body/request_review.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'addAndEditRequest.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'add_edit_request.dart';
 
 class RequestsBody extends StatefulWidget {
   @override
@@ -13,33 +16,17 @@ class RequestsBody extends StatefulWidget {
 
 class _RequestsBodyState extends State<RequestsBody>
     implements AddRequestCallback {
-  TextStyle style = TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal);
-
   bool _anchorToBottom = false;
 
-  FirebaseDatabaseUtil databaseUtil;
+  double _addFontSize = 0.0;
+
+  FirebaseDatabaseUtil _databaseUtil;
   int _counter;
 
   @override
   Widget build(BuildContext context) {
-    counterListener();
-    return initBody();
-  }
+    _counterListener();
 
-  Future counterListener() async {
-    _counter = databaseUtil.getCounter();
-    await new Future.delayed(const Duration(seconds: 3));
-    setState(() {});
-  }
-
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  initBody() {
     return Scaffold(
       body: (_counter != 0)
           ? new FirebaseAnimatedList(
@@ -47,7 +34,7 @@ class _RequestsBodyState extends State<RequestsBody>
                 child: Center(child: Text('Загрузка...')),
               ),
               key: new ValueKey<bool>(_anchorToBottom),
-              query: databaseUtil.getRequest(),
+              query: _databaseUtil.getRequest(),
               reverse: _anchorToBottom,
               sort: _anchorToBottom
                   ? (DataSnapshot a, DataSnapshot b) => b.key.compareTo(a.key)
@@ -79,24 +66,61 @@ class _RequestsBodyState extends State<RequestsBody>
     );
   }
 
+  //Обновление экрана заявок и счетчика заявок
+  Future _counterListener() async {
+    _counter = _databaseUtil.getCounter();
+    await new Future.delayed(const Duration(seconds: 3));
+    setState(() {});
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    databaseUtil = new FirebaseDatabaseUtil();
-    databaseUtil.initState();
+    _databaseUtil = new FirebaseDatabaseUtil();
+    _databaseUtil.initState();
+    _loadSettings();
   }
 
   @override
   void addRequest(Request request) {
     setState(() {
-      databaseUtil.addRequest(request);
+      _databaseUtil.addRequest(request);
     });
   }
 
   @override
   void update(Request request) {
     setState(() {
-      databaseUtil.updateRequest(request);
+      _databaseUtil.updateRequest(request);
+    });
+  }
+
+  _loadSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _addFontSize = (prefs.getDouble('addFontSize'));
+      //первичная инициализация настроек
+      if (_addFontSize == null) {
+        prefs.setDouble('addFontSize', 0.0);
+
+        prefs.setString('fillClient', '');
+        prefs.setString('fillContract', '');
+        prefs.setString('fillOrganisation', '');
+        prefs.setString('fillAddress', '');
+        prefs.setString('fillPhone', '');
+        prefs.setString('fillEmail', '');
+
+        prefs.setString('selectedMode', 'Клиент');
+
+        prefs.setString('selectedFontSize', 'Нормальный');
+      }
     });
   }
 
@@ -104,12 +128,12 @@ class _RequestsBodyState extends State<RequestsBody>
     Request request = Request.fromSnapshot(res);
     Color requestStatusColor = RequestStatusColor(request.status).getColor();
     TextStyle fieldStyle = TextStyle(
-      fontSize: 15.0,
+      fontSize: 15.0 + ((_addFontSize == null) ? 0.0 : _addFontSize),
       fontWeight: FontWeight.normal,
       color: Color(0xFF808080),
     );
     TextStyle dataStyle = TextStyle(
-      fontSize: 15.0,
+      fontSize: 15.0 + ((_addFontSize == null) ? 0.0 : _addFontSize),
       fontWeight: FontWeight.normal,
       color: Colors.black,
     );
@@ -121,7 +145,7 @@ class _RequestsBodyState extends State<RequestsBody>
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    RequestReview(request, databaseUtil, requestStatusColor)),
+                    RequestReview(request, _databaseUtil, requestStatusColor)),
           );
         },
         child: new Container(

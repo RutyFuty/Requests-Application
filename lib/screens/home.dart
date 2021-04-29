@@ -1,33 +1,25 @@
-import 'package:booking_request_app/body/requestsBody.dart';
-import 'package:booking_request_app/body/settingsBody.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'auth.dart';
+import 'body/requests_body.dart';
+import 'body/settings_body.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.auth, this.userId, this.onSignedOut})
-      : super(key: key);
-
   final BaseAuth auth;
   final VoidCallback onSignedOut;
   final String userId;
+
+  HomePage({Key key, this.auth, this.userId, this.onSignedOut})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  //Текущая нижняя вкладка
   var _currentPage = 0;
-
-  //Лист нижних вкладок
   List<dynamic> _bodyList = [RequestsBody(), SettingsBody()];
-
-  void onItemTapped(int index) {
-    setState(() {
-      _currentPage = index;
-    });
-  }
 
   _signOut() async {
     try {
@@ -36,10 +28,6 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       print(e);
     }
-  }
-
-  _initBody() {
-    return _bodyList.elementAt(_currentPage);
   }
 
   @override
@@ -53,12 +41,13 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           TextButton(
             child: Text('Выход',
-                style: TextStyle(fontSize: 17.0, color: Colors.white)),
+                style: TextStyle(
+                    fontSize: 17.0, color: Colors.white)),
             onPressed: _signOut,
           )
         ],
       ),
-      body: _initBody(),
+      body: _bodyList.elementAt(_currentPage),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.green,
@@ -66,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
-            label: 'Мои заявки',
+            label: 'Заявки',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -76,7 +65,7 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _currentPage,
         onTap: (int index) {
           setState(() {
-            onItemTapped(index);
+            _currentPage = index;
           });
         },
       ),

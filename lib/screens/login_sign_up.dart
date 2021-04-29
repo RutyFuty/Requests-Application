@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+
 import 'auth.dart';
 
-class LoginSignUp extends StatefulWidget {
-  LoginSignUp({this.auth, this.onSignedIn});
+enum FormMode { LOGIN, SIGNUP }
 
+class LoginSignUp extends StatefulWidget {
   final BaseAuth auth;
   final VoidCallback onSignedIn;
+
+  LoginSignUp({this.auth, this.onSignedIn});
 
   @override
   State<StatefulWidget> createState() => new _LoginSignUpState();
 }
-
-enum FormMode { LOGIN, SIGNUP }
 
 class _LoginSignUpState extends State<LoginSignUp> {
   final _formKey = new GlobalKey<FormState>();
@@ -20,7 +21,6 @@ class _LoginSignUpState extends State<LoginSignUp> {
   String _password;
   String _errorMessage = "";
 
-  // this will be used to identify the form to show
   FormMode _formMode = FormMode.LOGIN;
   bool _isIos = false;
   bool _isLoading = false;

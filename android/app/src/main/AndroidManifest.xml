@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.booking_request_app">
    <application
-        android:label="booking_request_app"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Ремонтник"
+        android:icon="@mipmap/repair_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

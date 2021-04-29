@@ -1,14 +1,15 @@
 import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
+
 import 'request.dart';
 
-//CRUD-методы для взаимодействия с базой данных
 class FirebaseDatabaseUtil {
   DatabaseReference _counterRef;
   DatabaseReference _requestRef;
   StreamSubscription<Event> _counterSubscription;
   StreamSubscription<Event> _messagesSubscription;
-  FirebaseDatabase database = new FirebaseDatabase();
+  FirebaseDatabase _database = new FirebaseDatabase();
   int _counter;
   DatabaseError error;
 
@@ -24,16 +25,14 @@ class FirebaseDatabaseUtil {
   }
 
   void initState() {
-    // Demonstrates configuring to the database using a file
     _counterRef = FirebaseDatabase.instance.reference().child('counter');
+    _requestRef = _database.reference().child('request');
 
-    // Demonstrates configuring the database directly
-    _requestRef = database.reference().child('request');
-    database.reference().child('counter').once().then((DataSnapshot snapshot) {
+    _database.reference().child('counter').once().then((DataSnapshot snapshot) {
       print('Connected to database and read ${snapshot.value}');
     });
-    database.setPersistenceEnabled(true);
-    database.setPersistenceCacheSizeBytes(10000000);
+    _database.setPersistenceEnabled(true);
+    _database.setPersistenceCacheSizeBytes(10000000);
     _counterRef.keepSynced(true);
 
     _counterSubscription = _counterRef.onValue.listen((Event event) {

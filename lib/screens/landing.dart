@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+
 import 'auth.dart';
-import 'loginSignUp.dart';
 import 'home.dart';
-
-class LandingPage extends StatefulWidget {
-  LandingPage({this.auth});
-
-  final BaseAuth auth;
-
-  @override
-  State<StatefulWidget> createState() => new _LandingPageState();
-}
+import 'login_sign_up.dart';
 
 enum AuthStatus {
   NOT_DETERMINED,
   LOGGED_OUT,
   LOGGED_IN,
+}
+
+class LandingPage extends StatefulWidget {
+  final BaseAuth auth;
+
+  LandingPage({this.auth});
+
+  @override
+  State<StatefulWidget> createState() => new _LandingPageState();
 }
 
 class _LandingPageState extends State<LandingPage> {
