@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'auth.dart';
+import '../auth.dart';
 
 enum FormMode { LOGIN, SIGNUP }
 

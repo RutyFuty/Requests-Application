@@ -1,4 +1,4 @@
-import 'package:booking_request_app/screens/body/request/request.dart';
+import 'package:booking_request_app/request/request.dart';
 
 abstract class AddRequestCallback {
   void addRequest(Request request);

@@ -1,4 +1,4 @@
-import 'package:booking_request_app/screens/auth.dart';
+import 'package:booking_request_app/auth.dart';
 import 'package:booking_request_app/screens/landing.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

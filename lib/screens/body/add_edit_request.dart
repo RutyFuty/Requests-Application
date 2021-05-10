@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:booking_request_app/screens/body/request/add_request_callback.dart';
-import 'package:booking_request_app/screens/body/request/request.dart';
+import 'package:booking_request_app/request/add_request_callback.dart';
+import 'package:booking_request_app/request/request.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -146,18 +146,19 @@ class _AddEditRequestState extends State<AddEditRequest> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               DropDownWidget("Тип заявки", requestTypes, teRequestType),
-              getTextField("Контактное лицо, ФИО", teClient, TextInputType.name),
-              getTextField("Телефон", tePhone, TextInputType.phone),
               getTextField(
-                  "Email", teEmail, TextInputType.emailAddress),
+                  "Контактное лицо, ФИО", teClient, TextInputType.name),
+              getTextField("Телефон", tePhone, TextInputType.phone),
+              getTextField("Email", teEmail, TextInputType.emailAddress),
               getTextField("Организация", teOrganisation, TextInputType.text),
-              getTextField("Контракт №", teContractNumber, TextInputType.number),
+              getTextField(
+                  "Контракт №", teContractNumber, TextInputType.number),
               getTextField("Адрес проведения работ", teAddress,
                   TextInputType.streetAddress),
               getTextField("Наименование оборудования/модель", teEquipment,
                   TextInputType.text),
-              getTextField("Описание неисправности", teComment,
-                  TextInputType.multiline),
+              getTextField(
+                  "Описание неисправности", teComment, TextInputType.multiline),
               (_selectedMode == 'Сервис')
                   ? DropDownWidget("Статус", requestStatuses, teStatus)
                   : Container(),
@@ -181,10 +182,8 @@ class _AddEditRequestState extends State<AddEditRequest> {
     );
   }
 
-  Widget getTextField(
-      String inputBoxName,
-      TextEditingController inputBoxController,
-      TextInputType textInputType) {
+  Widget getTextField(String inputBoxName,
+      TextEditingController inputBoxController, TextInputType textInputType) {
     var field = new Padding(
       padding: const EdgeInsets.all(5.0),
       child: new TextFormField(

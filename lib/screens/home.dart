@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'auth.dart';
+import '../auth.dart';
 import 'body/requests_body.dart';
 import 'body/settings_body.dart';
 
@@ -41,8 +41,7 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           TextButton(
             child: Text('Выход',
-                style: TextStyle(
-                    fontSize: 17.0, color: Colors.white)),
+                style: TextStyle(fontSize: 17.0, color: Colors.white)),
             onPressed: _signOut,
           )
         ],

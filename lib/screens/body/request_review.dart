@@ -1,6 +1,6 @@
-import 'package:booking_request_app/screens/body/request/add_request_callback.dart';
-import 'package:booking_request_app/screens/body/request/firebase_database_util.dart';
-import 'package:booking_request_app/screens/body/request/request.dart';
+import 'package:booking_request_app/request/add_request_callback.dart';
+import 'package:booking_request_app/request/firebase_database_util.dart';
+import 'package:booking_request_app/request/request.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
